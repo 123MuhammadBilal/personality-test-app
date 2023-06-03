@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  Typography,
+  FormControlLabel,
   RadioGroup,
   Radio,
   Stepper,
@@ -11,104 +11,209 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const Questions = () => {
-  const [staper, setSteper] = useState(0);
-  const [radio, setRadio] = useState("");
-  //result on base of the radio
-  const [result, setResult] = useState(0);
-  console.log("result_____", result)
+const QUESTIONS = [
+  {
+    question:
+      "You are really busy at work and a colleague is telling you their life story and personal woes. You:",
+    options: [
+      {
+        title: "Dont dare to interrupt them",
+        score: 2,
+        id: "Q1",
+      },
+      {
+        title:
+          "Think its more important to give them some of your time; work can wait",
+        score: 4,
+        id: "Q11",
+      },
+      {
+        title: "Listen, but with only with half an ear",
+        score: 6,
+        id: "Q111",
+      },
+      {
+        title: "Interrupt and explain that you are really busy at the moment",
+        score: 8,
+        id: "Q1111",
+      },
+    ],
+  },
 
-  const questions = [
-    {
-      id: Math.random(),
-      questionHeading: "You are really busy at work and a colleague is telling you their life story and personal woes. You:",
-      options: {
-        q1: "Dont dare to interrupt them",
-        q2: "Think its more important to give them some of your time; work can wait",
-        q3: "Listen, but with only with half an ear",
-        q4: "Interrupt and explain that you are really busy at the moment"
+  {
+    question:
+      "You have been sitting in the doctor's waiting room for more than 25 minutes. You:",
+    options: [
+      {
+        title: "Look at your watch every two minutes",
+        score: 2,
+        id: "Q2",
       },
-    },
-    {
-      id: Math.random(),
-      questionHeading: "You have been sitting in the doctor's waiting room for more than 25 minutes. You:",
-      options: {
-        q1: "Look at your watch every two minutes",
-        q2: "Bubble with inner anger, but keep quiet",
-        q3: "Explain to other equally impatient people in the room that the doctor is always running late",
-        q4: "Complain in a loud voice, while tapping your foot impatiently",
+      {
+        title: "Bubble with inner anger, but keep quiet",
+        score: 4,
+        id: "Q22",
       },
-    },
-    {
-      id: Math.random(),
-      questionHeading: "You are taking part in a guided tour of a museum. You:",
-      options: {
-        q1: "Are a bit too far towards the back so don't really hear what the guide is saying",
-        q2: "Follow the group without question",
-        q3: "Make sure that everyone is able to hear properly",
-        q4: "Are right up the front, adding your own comments in a loud voice",
+      {
+        title:
+          "Explain to other equally impatient people in the room that the doctor is always running late",
+        score: 6,
+        id: "Q222",
       },
-    },
-    {
-      id: Math.random(),
-      questionHeading: "During dinner parties at your home, you have a hard time with people who:",
-      options: {
-        q1: "Ask you to tell a story in front of everyone else",
-        q2: "Talk privately between themselves",
-        q3: "Hang around you all evening",
-        q4: "Always drag the conversation back to themselves",
+      {
+        title: "Complain in a loud voice, while tapping your foot impatiently",
+        score: 8,
+        id: "Q2222",
       },
-    },
-    {
-      id: Math.random(),
-      questionHeading: "You have been see a movie with your family and the reviews are mixed. You:",
-      options: {
-        q1: "Don't share your point of view with anyone",
-        q2: "Didn't like the film, but keep your views to yourself when asked",
-        q3: "State your point of view with enthusiasm",
-        q4: "Try to bring the others round to your point of view",
-      },
-    },
-  ];
-  
-  if (staper === staper){
-    var itemToShow = questions[staper];
-  }
+    ],
+  },
 
+  {
+    question: "You are taking part in a guided tour of a museum. You:",
+    options: [
+      {
+        title:
+          "Are a bit too far towards the back so don't really hear what the guide is saying",
+        score: 2,
+        id: "Q3",
+      },
+      { title: "Follow the group without question", score: 4, id: "Q33" },
+      {
+        title: "Make sure that everyone is able to hear properly",
+        score: 6,
+        id: "Q333",
+      },
+      {
+        title:
+          "Are right up the front, adding your own comments in a loud voice",
+        score: 8,
+        id: "Q3333",
+      },
+    ],
+  },
+
+  {
+    question:
+      "During dinner parties at your home, you have a hard time with people who:",
+    options: [
+      {
+        title: "Ask you to tell a story in front of everyone else",
+        score: 2,
+        id: "Q4",
+      },
+
+      {
+        title: "Talk privately between themselves",
+        score: 4,
+        id: "Q44",
+      },
+
+      {
+        title: "Hang around you all evening",
+        score: 6,
+        id: "Q444",
+      },
+      {
+        title: "Always drag the conversation back to themselves",
+        score: 8,
+        id: "Q4444",
+      },
+    ],
+  },
+
+  {
+    question:
+      "You have been see a movie with your family and the reviews are mixed. You:",
+    options: [
+      {
+        title: "Don't share your point of view with anyone",
+        score: 2,
+        id: "Q5",
+      },
+      {
+        title:
+          "Didn't like the film, but keep your views to yourself when asked",
+        score: 4,
+        id: "Q55",
+      },
+      {
+        title: "State your point of view with enthusiasm",
+        score: 6,
+        id: "Q555",
+      },
+      {
+        title: "Try to bring the others round to your point of view",
+        score: 8,
+        id: "Q5555",
+      },
+    ],
+  },
+];
+const STEPS = [
+  {
+    label: "Question 1",
+  },
+  {
+    label: "Question 2",
+  },
+  {
+    label: "Question 3",
+  },
+  {
+    label: "Question 4",
+  },
+  {
+    label: "Question 5",
+  },
+];
+
+const Questions = (props) => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [isButtonDisable, setIsButtonDisable] = useState(false);
+  // array of target ids
+  const [targetItemList, setTargetItemList] = useState([
+    null,
+    null,
+    null,
+    null,
+    null,
+  ]);
+
+  //use for navigation
   const navigate = useNavigate();
 
-  // on next staper button click
-  const onStaperIncrement = () => {
-    if (radio) {
-      onStaperAdd();
-    } else {
-      alert("please Select the Answer");
-      return;
+  //get the length of steps items
+  const maxSteps = STEPS.length;
+
+  //getting the object base on stepper
+  var obj = QUESTIONS[activeStep];
+
+
+
+
+  
+  // on next button click
+  const onNextButtonClick = () => {
+    setActiveStep(activeStep + 1);
+    // find item from object by target id
+    const selectedId = obj.options.find(
+      (item) => item.id === targetItemList[activeStep]
+    );
+
+    props.setTotalScore([...props.totalScore, selectedId.score]);
+    setIsButtonDisable(false);
+    //navigate the page base on score
+    if (activeStep === maxSteps - 1) {
+      //when activeStep equal to maxSteps()
+      if (props.scoreSum >= 20) {
+        navigate("/result", { state: "You are an Introvert!" });
+      } else {
+        navigate("/result", { state: "You are an Extrovert!" });
+      }
     }
   };
-  // on pevious button click
-  const onStaperDecrement = () => {
-    onStaperMinus();
-  };
 
-  //called function on onStaperIncrement
-  function onStaperAdd() {
-    if (staper >= 3) {
-      navigate("/result");
-    } else {
-      setSteper(staper + 1);
-      //   setRadio("");
-    }
-  }
 
-  //called function on onStaperDecrement
-  function onStaperMinus() {
-    if (staper <= 0) {
-      return;
-    } else {
-      setSteper(staper - 1);
-    }
-  } 
   return (
     <Box
       sx={{
@@ -120,25 +225,17 @@ const Questions = () => {
         flexGrow: "1",
         flexWrap: "warp",
         flexDirection: "column",
+        width: "1000px !importan",
       }}
-    > 
-      <Stepper activeStep={staper} alternativeLabel>
-        <Step key={Math.random()}>
-          <StepLabel>{"Question 1"}</StepLabel>
-        </Step>
-        <Step key={Math.random()}>
-          <StepLabel>{"Question 2"}</StepLabel>
-        </Step>
-        <Step key={Math.random()}>
-          <StepLabel>{"Question 3"}</StepLabel>
-        </Step>
-        <Step key={Math.random()}>
-          <StepLabel>{"Question 4"}</StepLabel>
-        </Step>
-        <Step key={Math.random()}>
-          <StepLabel>{"Question 5"}</StepLabel>
-        </Step>
+    >
+      <Stepper activeStep={activeStep} alternativeLabel>
+        {STEPS.map((item) => (
+          <Step>
+            <StepLabel>{item.label}</StepLabel>
+          </Step>
+        ))}
       </Stepper>
+
       <Box
         sx={{
           display: "flex",
@@ -149,8 +246,92 @@ const Questions = () => {
           padding: "20px 30px",
           width: "50%",
           borderRadius: "15px",
+          variant: "h4",
+          fontSize: "19px",
+          fontWeight: "bold",
+          color: "#111",
         }}
       >
+        <RadioGroup
+          column
+          defaultValue=""
+          name="radio-buttons-group"
+          onChange={(e) => {
+            if (QUESTIONS[activeStep] === obj) {
+              // first of all set the value on change
+              setTargetItemList([...targetItemList, e.target.value]);
+              // after that get the item by index(index is equal to activeStep)
+              const index = targetItemList.at(activeStep);
+              //find the index of array item by (item)
+              const itemIndex = targetItemList.indexOf(index);
+              //after that used splice and removed the item form arry on the base of index and set the new target id
+              targetItemList.splice(itemIndex, 1, e.target.value);
+              //set the array with current changes
+              setTargetItemList([...targetItemList]);
+              // on checked allow enable next button
+              setIsButtonDisable(true);
+            }
+          }}
+        >
+          <p style={{ color: "#2e937a" }}>{obj.question}</p>
+          {obj.options.map((item) => (
+            <FormControlLabel
+              checked={targetItemList.includes(item.id) ? true : false}
+              value={item.id}
+              control={<Radio />}
+              label={item.title}
+            />
+          ))}
+        </RadioGroup>
+
+        {/* <RadioGroup
+          column
+          defaultValue=""
+          name="radio-buttons-group"
+          onChange={(e) => {
+            if (QUESTIONS[activeStep] === obj) {
+              // first of all set the value on change
+              setTargetItemList([...targetItemList, e.target.value]);
+              // after that get the item by index(index is equal to activeStep)
+              const index = targetItemList.at(activeStep);
+              //find the index of array item by (item)
+              const itemIndex = targetItemList.indexOf(index);
+              //after that used splice and removed the item form arry on the base of index and set the new target id
+              targetItemList.splice(itemIndex, 1, e.target.value);
+              //set the array with current changes
+              setTargetItemList([...targetItemList]);
+              // on checked allow enable next button
+              setIsButtonDisable(true);
+            }
+          }}
+        >
+          <p style={{ color: "#2e937a" }}>{obj.question}</p>
+          <FormControlLabel
+            checked={targetItemList.includes(obj.options[0].id) ? true : false}
+            value={obj.options[0].id}
+            control={<Radio />}
+            label={obj.options[0].title}
+          />
+          <FormControlLabel
+            checked={targetItemList.includes(obj.options[1].id) ? true : false}
+            value={obj.options[1].id}
+            control={<Radio />}
+            label={obj.options[1].title}
+          />
+          <FormControlLabel
+            checked={targetItemList.includes(obj.options[2].id) ? true : false}
+            value={obj.options[2].id}
+            control={<Radio />}
+            label={obj.options[2].title}
+          />
+          <FormControlLabel
+            checked={targetItemList.includes(obj.options[3].id) ? true : false}
+            value={obj.options[3].id}
+            control={<Radio />}
+            label={obj.options[3].title}
+          />
+        </RadioGroup> */}
+
         <Box
           sx={{
             display: "flex",
@@ -159,57 +340,6 @@ const Questions = () => {
             alignItems: "start",
           }}
         >
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue={radio}
-            onChange={(e) => {
-              setRadio(e.target.value);
-              setResult(radio + e.target.value);
-              
-            }}
-            name="radio-buttons-group"
-          >
-            <Typography
-            key={itemToShow.key}
-              variant="h4"
-              fontSize="19px"
-              fontWeight="bold"
-              color="#2e937a"
-            >
-              {itemToShow.questionHeading}
-            </Typography>
-            <Box>
-              <Box sx={{display:'flex' , justifyContent:'start' , alignItems:'center'}}>
-              <Radio 
-                value={10}
-                label={itemToShow.options.q1}
-              />
-              <Typography>{itemToShow.options.q1}</Typography>
-              </Box>
-              <Box sx={{display:'flex' , justifyContent:'start' , alignItems:'center'}}>
-              <Radio
-                value={20}
-                label={itemToShow.options.q2}
-              />
-              <Typography>{itemToShow.options.q2}</Typography>
-              </Box>
-              <Box sx={{display:'flex' , justifyContent:'start' , alignItems:'center'}}>
-              <Radio
-                value={30}
-                label={itemToShow.options.q3}
-              />
-              <Typography>{itemToShow.options.q4}</Typography>
-              </Box>
-              <Box sx={{display:'flex' , justifyContent:'start' , alignItems:'center'}}>
-              <Radio
-                value={40}
-                label={itemToShow.options.q4}
-              />
-              <Typography>{itemToShow.options.q4}</Typography>
-              </Box>
-            </Box>
-            
-          </RadioGroup>
           <Box
             sx={{
               display: "flex",
@@ -218,17 +348,36 @@ const Questions = () => {
             }}
           >
             <Button
-              sx={{ bgcolor: staper ? "#2e937a" : "#fff", margin: "5px" }}
+              sx={{
+                bgcolor: "#2e937a",
+                margin: "5px",
+                color: "#d5d0d0",
+              }}
               variant="primary"
-              onClick={onStaperDecrement}
+              onClick={()=>{
+                setActiveStep(activeStep - 1);
+                console.log('setActiveStep',activeStep)
+                console.log('props.totalScore.length',props.totalScore.length)
+                if( setActiveStep <= props.totalScore.length){
+                  setIsButtonDisable(true);
+                }else{
+                  setIsButtonDisable(false);
+                }
+              }}
+              disabled={activeStep === 0}
             >
               Privious
             </Button>
             <Button
-              sx={{ bgcolor:radio ? "#2e937a" : "#fff", margin: "5px" }}
+              sx={{
+                bgcolor: "#2e937a",
+                margin: "5px",
+                color: "#d5d0d0",
+              }}
               variant="primary"
-              onClick={onStaperIncrement}
-              >
+              onClick={onNextButtonClick}
+              disabled={!isButtonDisable}
+            >
               Next
             </Button>
           </Box>

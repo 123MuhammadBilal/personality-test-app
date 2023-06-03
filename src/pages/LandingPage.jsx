@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   return (
-    <>
       <Box
         sx={{
           display: "flex",
@@ -21,7 +20,6 @@ const LandingPage = () => {
             flexBasis: "60%",
             justifyContent: "center",
             textAlign: "center",
-            wrap: "warp",
           }}
         >
           <Box
@@ -80,7 +78,6 @@ const LandingPage = () => {
           </Box>
         </Box>
       </Box>
-    </>
   );
 };
 
