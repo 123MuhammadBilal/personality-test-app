@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import bgImage from "../images/bg.png";
 import {
   Box,
   Button,
@@ -8,6 +9,7 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -162,57 +164,61 @@ const STEPS = [
   {
     label: "Question 4",
   },
-  {
-    label: "Question 5",
-  },
 ];
 
-const Questions = (props) => {
+const Questions = ({ totalScore, setTotalScore }) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [isButtonDisable, setIsButtonDisable] = useState(false);
   // array of target ids
-  const [targetItemList, setTargetItemList] = useState([
-    null,
-    null,
-    null,
-    null,
-    null,
-  ]);
-
+  const [targetItemList, setTargetItemList] = useState(QUESTIONS.map(() => null));
   //use for navigation
   const navigate = useNavigate();
-
   //get the length of steps items
   const maxSteps = STEPS.length;
-
   //getting the object base on stepper
   var obj = QUESTIONS[activeStep];
 
-
-
-
-  
-  // on next button click
-  const onNextButtonClick = () => {
-    setActiveStep(activeStep + 1);
-    // find item from object by target id
-    const selectedId = obj.options.find(
-      (item) => item.id === targetItemList[activeStep]
-    );
-
-    props.setTotalScore([...props.totalScore, selectedId.score]);
-    setIsButtonDisable(false);
-    //navigate the page base on score
-    if (activeStep === maxSteps - 1) {
-      //when activeStep equal to maxSteps()
-      if (props.scoreSum >= 20) {
-        navigate("/result", { state: "You are an Introvert!" });
-      } else {
-        navigate("/result", { state: "You are an Extrovert!" });
-      }
+  // on option selection
+  const onOptionSelection = (e) => {
+    if (QUESTIONS[activeStep] === obj) {
+      // first of all set the value on change
+      setTargetItemList([...targetItemList, e.target.value]);
+      // after that get the item by index(index is equal to activeStep)
+      const index = targetItemList.at(activeStep);
+      //find the index of array item by (item)
+      const itemIndex = targetItemList.indexOf(index);
+      //after that used splice and removed the item form arry on the base of index and set the new target id
+      targetItemList.splice(itemIndex, 1, e.target.value);
+      //set the array with current changes
+      setTargetItemList([...targetItemList]);
     }
   };
 
+  // on next button click
+  const onNextButtonClick = () => {
+    setActiveStep(activeStep + 1);
+    const selectedId = obj.options.find(
+      (item) => item.id === targetItemList[activeStep]
+    );
+    setTotalScore([...totalScore, selectedId.score]);
+    if (activeStep === maxSteps) {
+      onResult();
+    }
+  };
+
+  //result
+  const onResult = () => {
+    //getting the sum
+    const scoreSum = totalScore.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      0
+    );
+    //when activeStep equal to maxSteps()
+    if (scoreSum >= 20) {
+      navigate("/result", { state: "You are an Introvert!" });
+    } else {
+      navigate("/result", { state: "You are an Extrovert!" });
+    }
+  };
 
   return (
     <Box
@@ -221,14 +227,22 @@ const Questions = (props) => {
         justifyContent: "space-evenly",
         alignItems: "center",
         height: "100vh",
-        bgcolor: "#2e937a",
+        bgcolor: "#11c4e0",
         flexGrow: "1",
         flexWrap: "warp",
-        flexDirection: "column",
         width: "1000px !importan",
+        backgroundImage: `url(${bgImage})`,
+      backgroundPosition:'center',
+      backgroundSize:'cover',
+      backgroundRepeat:"no-repeat",
       }}
-    >
-      <Stepper activeStep={activeStep} alternativeLabel>
+    > 
+      <Stepper
+        sx={{ flexDirection: "column" }}
+        activeStep={activeStep}
+        alternativeLabel
+        orientation="vertical"
+      >
         {STEPS.map((item) => (
           <Step>
             <StepLabel>{item.label}</StepLabel>
@@ -242,39 +256,37 @@ const Questions = (props) => {
           flexDirection: "column",
           justifyContent: "start",
           alignItems: "start",
-          bgcolor: "#dcdcdb",
+          bgcolor: "#ffffff40",
           padding: "20px 30px",
           width: "50%",
           borderRadius: "15px",
           variant: "h4",
           fontSize: "19px",
           fontWeight: "bold",
-          color: "#111",
+          color: "#ffca3c",
+          opacity: 0.9,
+          borderLeft: '3px solid #11c4e0',
+          borderRight: '6px solid #ffca3c',
+          borderBottom:' 6px solid #ffca3c',
+          borderTop:' 1px solid #11c4e0',
         }}
       >
         <RadioGroup
           column
           defaultValue=""
           name="radio-buttons-group"
-          onChange={(e) => {
-            if (QUESTIONS[activeStep] === obj) {
-              // first of all set the value on change
-              setTargetItemList([...targetItemList, e.target.value]);
-              // after that get the item by index(index is equal to activeStep)
-              const index = targetItemList.at(activeStep);
-              //find the index of array item by (item)
-              const itemIndex = targetItemList.indexOf(index);
-              //after that used splice and removed the item form arry on the base of index and set the new target id
-              targetItemList.splice(itemIndex, 1, e.target.value);
-              //set the array with current changes
-              setTargetItemList([...targetItemList]);
-              // on checked allow enable next button
-              setIsButtonDisable(true);
-            }
-          }}
+          onChange={(e) => onOptionSelection(e)}
         >
-          <p style={{ color: "#2e937a" }}>{obj.question}</p>
-          {obj.options.map((item) => (
+          <Typography
+            variant="h4"
+            fontSize="19px"
+            fontWeight="bold"
+            color="#11c4e0"
+          >
+            {obj?.question}
+          </Typography>
+
+          {obj?.options.map((item) => (
             <FormControlLabel
               checked={targetItemList.includes(item.id) ? true : false}
               value={item.id}
@@ -283,54 +295,6 @@ const Questions = (props) => {
             />
           ))}
         </RadioGroup>
-
-        {/* <RadioGroup
-          column
-          defaultValue=""
-          name="radio-buttons-group"
-          onChange={(e) => {
-            if (QUESTIONS[activeStep] === obj) {
-              // first of all set the value on change
-              setTargetItemList([...targetItemList, e.target.value]);
-              // after that get the item by index(index is equal to activeStep)
-              const index = targetItemList.at(activeStep);
-              //find the index of array item by (item)
-              const itemIndex = targetItemList.indexOf(index);
-              //after that used splice and removed the item form arry on the base of index and set the new target id
-              targetItemList.splice(itemIndex, 1, e.target.value);
-              //set the array with current changes
-              setTargetItemList([...targetItemList]);
-              // on checked allow enable next button
-              setIsButtonDisable(true);
-            }
-          }}
-        >
-          <p style={{ color: "#2e937a" }}>{obj.question}</p>
-          <FormControlLabel
-            checked={targetItemList.includes(obj.options[0].id) ? true : false}
-            value={obj.options[0].id}
-            control={<Radio />}
-            label={obj.options[0].title}
-          />
-          <FormControlLabel
-            checked={targetItemList.includes(obj.options[1].id) ? true : false}
-            value={obj.options[1].id}
-            control={<Radio />}
-            label={obj.options[1].title}
-          />
-          <FormControlLabel
-            checked={targetItemList.includes(obj.options[2].id) ? true : false}
-            value={obj.options[2].id}
-            control={<Radio />}
-            label={obj.options[2].title}
-          />
-          <FormControlLabel
-            checked={targetItemList.includes(obj.options[3].id) ? true : false}
-            value={obj.options[3].id}
-            control={<Radio />}
-            label={obj.options[3].title}
-          />
-        </RadioGroup> */}
 
         <Box
           sx={{
@@ -348,37 +312,76 @@ const Questions = (props) => {
             }}
           >
             <Button
-              sx={{
-                bgcolor: "#2e937a",
-                margin: "5px",
-                color: "#d5d0d0",
-              }}
+                           sx={{
+                            outline: '0',
+                            gridGap: '8px',
+                            alignItems: 'center',
+                            border: '1px solid #11c4e0',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            flexShrink: '0',
+                            fontSize: '16px',
+                            gap: '8px',
+                            justifyContent: 'center',
+                            lineHeight: '1.5',
+                            overflow: 'hidden',
+                            padding: '12px 16px',
+                            textDecoration: 'none',
+                            textOverflow: 'ellipsis',
+                            transition: 'all .14s ease-out',
+                            whiteSpace: 'nowrap',
+                            margin:'3px',
+                            bgcolor: '#11c4e0',
+                            "&:hover": {
+                              boxShadow: '4px 4px 0 #11c4e0',
+                            },
+                            "&:active":{
+                              outlineOffset: '1px',
+                            }
+                          }}
               variant="primary"
-              onClick={()=>{
+              onClick={() => {
                 setActiveStep(activeStep - 1);
-                console.log('setActiveStep',activeStep)
-                console.log('props.totalScore.length',props.totalScore.length)
-                if( setActiveStep <= props.totalScore.length){
-                  setIsButtonDisable(true);
-                }else{
-                  setIsButtonDisable(false);
-                }
               }}
               disabled={activeStep === 0}
             >
               Privious
             </Button>
             <Button
-              sx={{
-                bgcolor: "#2e937a",
-                margin: "5px",
-                color: "#d5d0d0",
-              }}
+                          sx={{
+                            outline: '0',
+                            gridGap: '8px',
+                            alignItems: 'center',
+                            border: '1px solid #11c4e0',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            flexShrink: '0',
+                            fontSize: '16px',
+                            margin:'3px',
+                            gap: '8px',
+                            justifyContent: 'center',
+                            lineHeight: '1.5',
+                            overflow: 'hidden',
+                            padding: '12px 16px',
+                            textDecoration: 'none',
+                            textOverflow: 'ellipsis',
+                            transition: 'all .14s ease-out',
+                            whiteSpace: 'nowrap',
+                            bgcolor: '#11c4e0',
+                            "&:hover": {
+                              boxShadow: '4px 4px 0 #11c4e0',
+                            },
+                            "&:active":{
+                              outlineOffset: '1px',
+                            }
+                          }}
               variant="primary"
               onClick={onNextButtonClick}
-              disabled={!isButtonDisable}
+              disabled={targetItemList[activeStep] === null ? true : false}
             >
-              Next
+              {activeStep === maxSteps ? "Finish" : "Next"}
             </Button>
           </Box>
         </Box>
